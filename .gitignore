@@ -1,6 +1,4 @@
-/prometheus-remote-s3
-/examples/local/data
-/tmp
+prometheus-remote-minio
 
 # Binaries for programs and plugins
 *.exe
@@ -18,3 +16,5 @@
 # Dependency directories (remove the comment below to include it)
 /**/vendor
 vendor
+
+docker-compose.yml
