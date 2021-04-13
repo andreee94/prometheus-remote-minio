@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+    prometheus-remote-minio:
+        build: 
+            context: .
+            dockerfile: ./Dockerfile
+        container_name: prometheus-remote-minio
+        image: localhost:5000/prometheus-remote-minio:1.0.0
+        restart: "no"
+        command:  "-bucket prometheus -endpoint localhost:9000 -key key -secret secret -buffer-dir /tmp/buffer"
