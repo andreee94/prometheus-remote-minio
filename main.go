@@ -13,16 +13,36 @@ import (
 )
 
 func main() {
-	s3Bucket := flag.String("s3-bucket", "", "S3 bucket name")
-	s3KeyPrefix := flag.String("s3-key-prefix", "", "S3 key prefix")
+	minioBucket := flag.String("bucket", "", "Minio bucket name")
+	minioEndpoint := flag.String("endpoint", "", "Minio endpoint")
+	minioKey := flag.String("key", "", "Minio key")
+	minioSecret := flag.String("secret", "", "Minio secret")
+	objectPrefix := flag.String("prefix", "", "Minio Object Prefix")
 	bufferDir := flag.String("buffer-dir", "", "Path to a buffer directory")
 	uploadIntervalStr := flag.String("upload-interval", "1h", "Interval duration to upload")
 	listen := flag.String("listen", ":8080", "Address to listen on")
 	pprof := flag.String("pprof", "", "To enable pprof, pass address to listen such as 'localhost:6060'")
 	flag.Parse()
 
-	if *s3Bucket == "" {
-		log.Fatal("-s3-bucket is required")
+	if *minioBucket == "" {
+		log.Fatal("-bucket is required")
+	}
+
+	if *minioEndpoint == "" {
+		log.Fatal("-endpoint is required")
+	}
+
+	if *minioKey == "" {
+		log.Fatal("-key is required")
+	}
+
+	if *minioSecret == "" {
+		log.Fatal("-secret is required")
+	}
+
+	if *objectPrefix == "" {
+		log.Println("-prefix set to empty")
+		*objectPrefix = ""
 	}
 
 	if *bufferDir == "" {
@@ -47,7 +67,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	uploader := NewUploader(uploadInterval, buffer, *s3Bucket, *s3KeyPrefix)
+	// uploader := NewUploader(uploadInterval, buffer, *s3Bucket, *s3KeyPrefix)
+	uploader := NewUploaderMinio(
+		uploadInterval,
+		buffer,
+		*minioBucket,
+		*objectPrefix,
+		*minioEndpoint,
+		*minioKey,
+		*minioSecret,
+	)
 	go uploader.RunLoop()
 
 	log.Printf("Listening %s", *listen)

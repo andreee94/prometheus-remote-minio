@@ -32,9 +32,9 @@ func NewServer(buffer *Buffer) (*Server, error) {
 }
 
 func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "prometheus_remote_s3_total_received_timeseries{} %d\n", s.totalReceivedTimeseries)
-	fmt.Fprintf(w, "prometheus_remote_s3_total_sent_timeseries{} %d\n", s.totalSentTimeseries)
-	fmt.Fprintf(w, "prometheus_remote_s3_total_write_requests{} %d\n", s.totalWriteRequests)
+	fmt.Fprintf(w, "prometheus_remote_minio_total_received_timeseries{} %d\n", s.totalReceivedTimeseries)
+	fmt.Fprintf(w, "prometheus_remote_minio_total_sent_timeseries{} %d\n", s.totalSentTimeseries)
+	fmt.Fprintf(w, "prometheus_remote_minio_total_write_requests{} %d\n", s.totalWriteRequests)
 }
 
 func (s *Server) handleWrite(w http.ResponseWriter, r *http.Request) {
@@ -74,6 +74,8 @@ func (s *Server) writeTimeseries(tss []*prompb.TimeSeries) error {
 			for _, l := range ts.Labels {
 				labels[l.Name] = l.Value
 			}
+
+			// log.Println(ss.Value, labels)
 
 			err := s.buffer.Put(ss.Timestamp, ss.Value, labels)
 			if err != nil {
